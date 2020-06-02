@@ -14,7 +14,7 @@ class Instadistics:
         self.followers_query_hash = ""
         self.following_query_hash = ""
         self.timelime_query_hash = ""
-        self.likes_query_hash = "d5d763b1e2acf209d62d22d184488e57"
+        self.likes_query_hash = ''
         self.cookie = cookies
         self.user_id = ""
         self.user_name = user_name
