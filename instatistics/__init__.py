@@ -1,5 +1,5 @@
 from ._scraper import Scraper
-from ._statistical import Dispersion
+from ._statistical import *
 
 # para compatibilidad con tus mmds, luego se lo quitamos
 # <!---
