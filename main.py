@@ -2,32 +2,19 @@ import argparse
 import sys
 import logging
 from os import path
-from instatistics import core
+from instatistics import *
 
 
 def read_cookies_file(src):
     cookies = None
+
     with open(src, 'r', encoding='utf-8') as cookies_file:
         cookies = cookies_file.read()
-    return cookies
+
+    return cookies.replace("\n", "")
 
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(
-        description='get some instagram statistics')
-
-    parser.add_argument('-c', '--cookies', type=str, dest='cookies')
-    parser.add_argument('--cookies-from', type=str, dest='cookies_from')
-    parser.add_argument('-u', '--user', type=str, dest='user', required=True)
-    parser.add_argument('--scrap', action='store_true',
-                        dest='scrap', required=False)
-    parser.add_argument('--output', type=str)
-    # TODO (@Algoru):
-    # --stat (genera estadísticas deseadas)
-    #    [all, followers, following, likes, publicaciones en un periodo de tiempo, comentarios, etc]
-
-    args = parser.parse_args()
-
+def scrap(args):
     cookies = None
     if args.cookies:
         cookies = args.cookies
@@ -46,14 +33,46 @@ if __name__ == '__main__':
         else:
             cookies = read_cookies_file('cookies.txt')
 
-    scrapper = core.Instadistics(
+    scrapper = Scraper(
         user_name=args.user, cookies=cookies, output=args.output)
 
+    scrapper.scrap_user_info()
+
+    scrapper.fetch_followers()
+    scrapper.fetch_following()
+    scrapper.fetch_timeline()
+
+    print(" [ >] hf!")
+
+
+def statistics(args):
+    sources = Sources(args.user)
+
+    basics = Basics(sources.data)
+
+    basics.following_followers_percent()
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(
+        description='get some instagram statistics')
+
+    parser.add_argument('-c', '--cookies', type=str, dest='cookies')
+    parser.add_argument('--cookies-from', type=str, dest='cookies_from')
+    parser.add_argument('-u', '--user', type=str, dest='user', required=True)
+    parser.add_argument('--scrap', action='store_true',
+                        dest='scrap', required=False)
+    parser.add_argument('--statistics', action='store_true',
+                        dest='statistics', required=False)
+    parser.add_argument('--output', type=str)
+    # TODO (@Algoru):
+    # --stat (genera estadísticas deseadas)
+    #    [all, followers, following, likes, publicaciones en un periodo de tiempo, comentarios, etc]
+
+    args = parser.parse_args()
+
     if args.scrap:
-        scrapper.scrap_user_info()
+        scrap(args)
 
-        scrapper.fetch_followers()
-        scrapper.fetch_following()
-        scrapper.fetch_timeline()
-
-        print(" [ >] hf!")
+    elif args.statistics:
+        statistics(args)

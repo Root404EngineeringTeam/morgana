@@ -121,6 +121,8 @@ class Scraper:
             print("\r [ >] Fetching %i posts in timeline (%i%%)" % (
                 timeline_size, (len(edges) / timeline_size) * 100), end='')
 
+        # TODO: (@edo0xff)
+        #   comments tambien se pagina, hay que scrapear todos los comments
         posts = []
         i = 1
         for edge in edges:
