@@ -4,10 +4,11 @@ import time
 import pandas
 import requests
 import urllib.parse
+import os
 
 
 class Scraper:
-    def __init__(self, user_name, cookies):
+    def __init__(self, user_name, cookies, output):
         self.graphql_url = "https://www.instagram.com/graphql/query"
         self.base_url = "https://www.instagram.com"
 
@@ -18,6 +19,10 @@ class Scraper:
         self.cookie = cookies
         self.user_id = ""
         self.user_name = user_name
+        self.output = user_name if not output else output
+
+        if not os.path.exists(self.output) or not os.path.isdir(self.output):
+            os.makedirs(self.output)
 
         with open("banner.txt", "r", encoding="utf8") as banner:
             print(banner.read())
@@ -139,7 +144,8 @@ class Scraper:
 
             time.sleep(2)
 
-        with open('%s_timeline.json' % self.user_name, 'w') as outfile:
+        output = os.path.join(self.output, '%s_timeline.json' % self.user_name)
+        with open(output, 'w') as outfile:
             json.dump(posts, outfile)
 
         print("\n [ >] Data saved to %s_timeline.json" % self.user_name)
@@ -182,7 +188,8 @@ class Scraper:
         data_frame = pandas.DataFrame(
             [following['node'] for following in followings])
 
-        data_frame.to_csv("%s_following.csv" % self.user_name)
+        output = os.path.join(self.output, '%s_following.csv' % self.user_name)
+        data_frame.to_csv(output)
 
         print("\n [ >] Data saved to %s_following.csv" % self.user_name)
         print(" [ >] Operation done")
@@ -224,7 +231,8 @@ class Scraper:
         data_frame = pandas.DataFrame(
             [follower['node'] for follower in followers])
 
-        data_frame.to_csv("%s_followers.csv" % self.user_name)
+        output = os.path.join(self.output, '%s_followers.csv' % self.user_name)
+        data_frame.to_csv(output)
 
         print("\n [ >] Data saved to %s_followers.csv" % self.user_name)
         print(" [ >] Operation done")

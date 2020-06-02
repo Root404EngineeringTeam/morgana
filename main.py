@@ -11,6 +11,7 @@ def read_cookies_file(src):
         cookies = cookies_file.read()
     return cookies
 
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description='get some instagram statistics')
@@ -20,9 +21,8 @@ if __name__ == '__main__':
     parser.add_argument('-u', '--user', type=str, dest='user', required=True)
     parser.add_argument('--scrap', action='store_true',
                         dest='scrap', required=False)
+    parser.add_argument('--output', type=str)
     # TODO (@Algoru):
-    # --output (especifíca donde se van a escribir los resultados)
-    # --scrap (scrap información)
     # --stat (genera estadísticas deseadas)
     #    [all, followers, following, likes, publicaciones en un periodo de tiempo, comentarios, etc]
 
@@ -46,7 +46,8 @@ if __name__ == '__main__':
         else:
             cookies = read_cookies_file('cookies.txt')
 
-    scrapper = core.Instadistics(user_name=args.user, cookies=cookies)
+    scrapper = core.Instadistics(
+        user_name=args.user, cookies=cookies, output=args.output)
 
     if args.scrap:
         scrapper.scrap_user_info()
@@ -56,6 +57,3 @@ if __name__ == '__main__':
         scrapper.fetch_timeline()
 
         print(" [ >] hf!")
-
-
-
