@@ -7,9 +7,7 @@ import urllib.parse
 
 
 class Instadistics:
-
-
-    def __init__(self):
+    def __init__(self, user_name, cookies):
         self.graphql_url = "https://www.instagram.com/graphql/query"
         self.base_url = "https://www.instagram.com"
 
@@ -17,36 +15,36 @@ class Instadistics:
         self.following_query_hash = ""
         self.timelime_query_hash = ""
         self.likes_query_hash = "d5d763b1e2acf209d62d22d184488e57"
-        self.cookie = ''
+        self.cookie = cookies
         self.user_id = ""
-        self.user_name = ""
+        self.user_name = user_name
 
-        with open("banner.txt", "r") as banner:
+        with open("banner.txt", "r", encoding="utf8") as banner:
             print(banner.read())
-
 
     def set_query_hashes(self, followers, following):
         self.followers_query_hash = followers
         self.following_query_hash = following
 
-
     def set_cookie(self, cookie):
         self.cookie = cookie
 
-
     def compose_query(self, query_hash, variables):
-        variables = str(variables).replace("True", "true").replace("False","false").replace("'", '"').replace(" ", "")
+        variables = str(variables).replace("True", "true").replace(
+            "False", "false").replace("'", '"').replace(" ", "")
         variables = urllib.parse.quote(variables)
-        query = "%s?query_hash=%s&variables=%s" % (self.graphql_url, query_hash, variables)
+        query = "%s?query_hash=%s&variables=%s" % (
+            self.graphql_url, query_hash, variables)
 
         time.sleep(1)
         return query
 
-
     def fetch_likes(self, shortcode, current, total):
-        print("\r [ >] Fetching likes information for %s (%i%%)" % (shortcode, (current / total) * 100), end='')
+        print("\r [ >] Fetching likes information for %s (%i%%)" %
+              (shortcode, (current / total) * 100), end='')
 
-        variables = {"shortcode":shortcode,"include_reel":False,"first":45}
+        variables = {"shortcode": shortcode,
+                     "include_reel": False, "first": 45}
         query = self.compose_query(self.likes_query_hash, variables)
 
         response = requests.get(query, headers={'Cookie': self.cookie})
@@ -65,7 +63,8 @@ class Instadistics:
         likes = [edge['node'] for edge in edges['edges']]
 
         while has_next_page:
-            variables = {"shortcode":shortcode,"include_reel":False,"first":45,"after":next_page_cursor}
+            variables = {"shortcode": shortcode, "include_reel": False,
+                         "first": 45, "after": next_page_cursor}
             query = self.compose_query(self.likes_query_hash, variables)
 
             response = requests.get(query, headers={'Cookie': self.cookie})
@@ -85,9 +84,8 @@ class Instadistics:
 
         return likes
 
-
     def fetch_timeline(self):
-        variables = {"id":self.user_id,"first":45}
+        variables = {"id": self.user_id, "first": 45}
         query = self.compose_query(self.timelime_query_hash, variables)
 
         response = requests.get(query, headers={'Cookie': self.cookie})
@@ -102,7 +100,8 @@ class Instadistics:
         edges = timeline['edges']
 
         while has_next_page:
-            variables = {"id":self.user_id,"first":45,"after":next_page_cursor}
+            variables = {"id": self.user_id,
+                         "first": 45, "after": next_page_cursor}
             query = self.compose_query(self.timelime_query_hash, variables)
 
             response = requests.get(query, headers={'Cookie': self.cookie})
@@ -114,7 +113,8 @@ class Instadistics:
 
             edges += timeline['edges']
 
-            print("\r [ >] Fetching %i posts in timeline (%i%%)" % (timeline_size, (len(edges) / timeline_size) * 100), end='')
+            print("\r [ >] Fetching %i posts in timeline (%i%%)" % (
+                timeline_size, (len(edges) / timeline_size) * 100), end='')
 
         posts = []
         i = 1
@@ -146,7 +146,8 @@ class Instadistics:
         print(" [ >] Operation done (%i posts fetched)" % len(posts))
 
     def fetch_following(self):
-        variables = {"id":self.user_id,"include_reel":True,"fetch_mutual":True,"first":45}
+        variables = {"id": self.user_id, "include_reel": True,
+                     "fetch_mutual": True, "first": 45}
         query = self.compose_query(self.following_query_hash, variables)
 
         response = requests.get(query, headers={'Cookie': self.cookie})
@@ -161,7 +162,8 @@ class Instadistics:
         followings = user['edge_follow']['edges']
 
         while has_next_page:
-            variables = {"id":self.user_id,"include_reel":True,"fetch_mutual":True,"first":45, "after":next_page_cursor}
+            variables = {"id": self.user_id, "include_reel": True,
+                         "fetch_mutual": True, "first": 45, "after": next_page_cursor}
             query = self.compose_query(self.following_query_hash, variables)
 
             response = requests.get(query, headers={'Cookie': self.cookie})
@@ -174,18 +176,20 @@ class Instadistics:
 
             followings += user['edge_follow']['edges']
 
-            print("\r [ >] Fetching data of %i users that %s follows (%i%%)" % (following_count, self.user_name, (len(followings) / following_count) * 100), end='')
+            print("\r [ >] Fetching data of %i users that %s follows (%i%%)" % (
+                following_count, self.user_name, (len(followings) / following_count) * 100), end='')
 
-        data_frame = pandas.DataFrame([following['node'] for following in followings])
+        data_frame = pandas.DataFrame(
+            [following['node'] for following in followings])
 
         data_frame.to_csv("%s_following.csv" % self.user_name)
 
         print("\n [ >] Data saved to %s_following.csv" % self.user_name)
         print(" [ >] Operation done")
 
-
     def fetch_followers(self):
-        variables = {"id":self.user_id,"include_reel":False,"fetch_mutual":True,"first":45}
+        variables = {"id": self.user_id, "include_reel": False,
+                     "fetch_mutual": True, "first": 45}
         query = self.compose_query(self.followers_query_hash, variables)
 
         response = requests.get(query, headers={'Cookie': self.cookie})
@@ -201,7 +205,8 @@ class Instadistics:
         followers = user['edge_followed_by']['edges']
 
         while has_next_page:
-            variables = {"id":self.user_id,"include_reel":False,"fetch_mutual":True,"first":45, "after":next_page_cursor}
+            variables = {"id": self.user_id, "include_reel": False,
+                         "fetch_mutual": True, "first": 45, "after": next_page_cursor}
             query = self.compose_query(self.followers_query_hash, variables)
 
             response = requests.get(query, headers={'Cookie': self.cookie})
@@ -213,19 +218,21 @@ class Instadistics:
             next_page_cursor = user['edge_followed_by']['page_info']['end_cursor']
 
             followers += user['edge_followed_by']['edges']
-            print("\r [ >] Fetching %i users data that follows %s (%i%%)" % (followers_count, self.user_name, (len(followers) / followers_count) * 100), end='')
+            print("\r [ >] Fetching %i users data that follows %s (%i%%)" % (
+                followers_count, self.user_name, (len(followers) / followers_count) * 100), end='')
 
-        data_frame = pandas.DataFrame([follower['node'] for follower in followers])
+        data_frame = pandas.DataFrame(
+            [follower['node'] for follower in followers])
 
         data_frame.to_csv("%s_followers.csv" % self.user_name)
 
         print("\n [ >] Data saved to %s_followers.csv" % self.user_name)
         print(" [ >] Operation done")
 
-
     def scrap_user_info(self):
         print(" [ >] Fetching user profile information")
-        response = requests.get("%s/%s" % (self.base_url, self.user_name), headers={'Cookie': self.cookie})
+        response = requests.get(
+            "%s/%s" % (self.base_url, self.user_name), headers={'Cookie': self.cookie})
         result = response.text
 
         user_id_regex = r'profilePage_([0-9]+)'
@@ -234,9 +241,8 @@ class Instadistics:
         if user_id:
             self.user_id = user_id.group(1)
             print(" [ >] user_id: %s" % user_id.group(1))
-
-
-        response = requests.get("https://www.instagram.com/static/bundles/es6/Consumer.js/72f23d3ee788.js", headers={'Cookie': self.cookie})
+        response = requests.get(
+            "https://www.instagram.com/static/bundles/es6/Consumer.js/72f23d3ee788.js", headers={'cookie': self.cookie})
         result = response.text
 
         follow_query_hash_regex = r'const t="(\w+)",n="(\w+)",u=1,l='
@@ -249,7 +255,8 @@ class Instadistics:
             print(" [ >] Followers query_hash: %s" % self.followers_query_hash)
             print(" [ >] Following query_hash: %s" % self.following_query_hash)
 
-        response = requests.get("https://www.instagram.com/static/bundles/es6/ProfilePageContainer.js/352b6034e548.js", headers={'Cookie': self.cookie})
+        response = requests.get(
+            "https://www.instagram.com/static/bundles/es6/ProfilePageContainer.js/352b6034e548.js", headers={'Cookie': self.cookie})
         result = response.text
 
         timeline_query_hash_regex = r'void 0:l.pagination\},queryId:"(\w+)",queryParams\:t=>\(\{id\:t\}\)'
@@ -260,7 +267,8 @@ class Instadistics:
 
             print(" [ >] Timeline query hash: %s" % self.timelime_query_hash)
 
-        response = requests.get("https://www.instagram.com/static/bundles/es6/ConsumerLibCommons.js/dd161cf434d6.js",  headers={'Cookie': self.cookie})
+        response = requests.get(
+            "https://www.instagram.com/static/bundles/es6/ConsumerLibCommons.js/dd161cf434d6.js",  headers={'Cookie': self.cookie})
         result = response.text
 
         likes_query_hash_regex = r'const t="(\w+)",o=1,n=\(function\(\)\{const n=t;'
@@ -270,20 +278,3 @@ class Instadistics:
             self.likes_query_hash = likes_query_hash.group(1)
 
             print(" [ >] Likes query hash: %s" % self.likes_query_hash)
-
-if __name__ == "__main__":
-    scrapper = Instadistics()
-
-    mode = input(" [ >] Choose an option: ")
-
-    if mode == "1":
-
-        scrapper.user_name = input(" [ >] Instagram user name: ")
-
-        scrapper.scrap_user_info()
-
-        scrapper.fetch_followers()
-        scrapper.fetch_following()
-        scrapper.fetch_timeline()
-
-        print(" [ >] hf!")

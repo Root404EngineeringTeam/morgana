@@ -13,7 +13,5 @@
    Instagram y sus interacciones (Fotos, Likes y Comentarios), para
    su posterior análisis.
 
-   Coded by ¬edo0xff¬
+   Coded by ¬edo0xff¬ & Álvaro Stagg
 
-   1 > Run profile information scrap
-   2 > Run profile data statistical analysis
