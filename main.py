@@ -23,8 +23,6 @@ if __name__ == '__main__':
                         dest='scrap', required=False)
     parser.add_argument('--output', type=str)
     # TODO (@Algoru):
-    # --output (especifíca donde se van a escribir los resultados)
-    # --scrap (scrap información)
     # --stat (genera estadísticas deseadas)
     #    [all, followers, following, likes, publicaciones en un periodo de tiempo, comentarios, etc]
 
