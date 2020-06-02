@@ -6,7 +6,7 @@ import requests
 import urllib.parse
 
 
-class Instadistics:
+class Scraper:
     def __init__(self, user_name, cookies):
         self.graphql_url = "https://www.instagram.com/graphql/query"
         self.base_url = "https://www.instagram.com"
