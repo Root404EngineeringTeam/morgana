@@ -3,7 +3,7 @@ import pandas
 import logging
 
 
-class DataSources:
+class Sources:
 
     def __init__(self):
         self.data_sources = {
@@ -32,11 +32,39 @@ class DataSources:
                 self.data[key] = pandas.read_csv(file_path)
 
 
+class Basics:
+
+    def __init__(self, data):
+        self.data = data
+
+    def following_followers_percent(self):
+        count = 0
+
+        print("\n==========================")
+        print("= FOLLOWING FOLLOWERS")
+        print('--------------------------')
+
+        for idnex, follower in self.data['followers'].iterrows():
+            if not (self.data['following'].loc[self.data['following']['username'] == follower['username']]).empty:
+                count += 1
+
+                print("%s aka. %s" % (follower['full_name'], follower['username']))
+
+        print('--------------------------')
+        print("People who follows user and user follow them: %i" % count)
+        print("That's %i%% of the %s followers" % (
+            (count / self.data['followers'].shape[0]) * 100, self.data['followers'].shape[0]))
+        print("==========================")
+
 # meto pruebas aqui pa no mover el main
 if __name__ == "__main__":
-    dispersion = DataSources()
+    sources = Sources()
 
-    dispersion.data_sources['followers'] = input('followers path: ')
-    dispersion.data_sources['following'] = input('following path: ')
+    sources.data_sources['followers'] = input('followers path: ')
+    sources.data_sources['following'] = input('following path: ')
 
-    dispersion.load_data()
+    sources.load_data()
+
+    basics = Basics(sources.data)
+
+    basics.following_followers_percent()
