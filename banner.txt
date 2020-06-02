@@ -1,0 +1,19 @@
+
+███▄ ▄███▓ ▒█████   ██▀███    ▄████  ▄▄▄       ███▄    █  ▄▄▄
+▓██▒▀█▀ ██▒▒██▒  ██▒▓██ ▒ ██▒ ██▒ ▀█▒▒████▄     ██ ▀█   █ ▒████▄
+▓██    ▓██░▒██░  ██▒▓██ ░▄█ ▒▒██░▄▄▄░▒██  ▀█▄  ▓██  ▀█ ██▒▒██  ▀█▄
+▒██    ▒██ ▒██   ██░▒██▀▀█▄  ░▓█  ██▓░██▄▄▄▄██ ▓██▒  ▐▌██▒░██▄▄▄▄██
+▒██▒   ░██▒░ ████▓▒░░██▓ ▒██▒░▒▓███▀▒ ▓█   ▓██▒▒██░   ▓██░ ▓█   ▓██▒
+░ ▒░   ░  ░░ ▒░▒░▒░ ░ ▒▓ ░▒▓░ ░▒   ▒  ▒▒   ▓▒█░░ ▒░   ▒ ▒  ▒▒   ▓▒█░
+░  ░      ░  ░ ▒ ▒░   ░▒ ░ ▒░  ░   ░   ▒   ▒▒ ░░ ░░   ░ ▒░  ▒   ▒▒ ░
+░      ░   ░ ░ ░ ▒    ░░   ░ ░ ░   ░   ░   ▒      ░   ░ ░   ░   ▒
+      ░       ░ ░     ░           ░       ░  ░         ░       ░  ░
+
+   Herramienta para recopilar la información publica de un perfil de
+   Instagram y sus interacciones (Fotos, Likes y Comentarios), para
+   su posterior análisis.
+
+   Coded by ¬edo0xff¬
+
+   1 > Run profile information scrap
+   2 > Run profile data statistical analysis
