@@ -134,7 +134,7 @@ class Basics:
             for comment in post['comments']:
                 if (query in comment['text'].lower()) or (query in comment['owner']['username']):
                     print("https://www.instagram.com/p/%s" % post['shortcode'])
-                    print("%s commented" % comment['owner']['username'])
+                    print("%s commented '%s'" % (comment['owner']['username'], comment['text']))
 
         print('--------------------------')
 
