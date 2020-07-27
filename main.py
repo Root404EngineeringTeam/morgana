@@ -60,6 +60,9 @@ def statistics(args):
 
 
 if __name__ == '__main__':
+    with open("banner.txt", "r", encoding="utf8") as banner:
+        print(banner.read())
+        
     parser = argparse.ArgumentParser(
         description='get some instagram statistics')
 

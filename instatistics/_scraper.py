@@ -24,9 +24,6 @@ class Scraper:
         if not os.path.exists(self.output) or not os.path.isdir(self.output):
             os.makedirs(self.output)
 
-        with open("banner.txt", "r", encoding="utf8") as banner:
-            print(banner.read())
-
     def set_query_hashes(self, followers, following):
         self.followers_query_hash = followers
         self.following_query_hash = following
@@ -217,7 +214,7 @@ class Scraper:
 
         while has_next_page:
             time.sleep(1)
-            
+
             variables = {"id": self.user_id, "include_reel": False,
                          "fetch_mutual": True, "first": 45, "after": next_page_cursor}
             query = self.compose_query(self.followers_query_hash, variables)
