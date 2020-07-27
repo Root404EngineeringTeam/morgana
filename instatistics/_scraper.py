@@ -170,6 +170,8 @@ class Scraper:
         followings = user['edge_follow']['edges']
 
         while has_next_page:
+            time.sleep(1)
+
             variables = {"id": self.user_id, "include_reel": True,
                          "fetch_mutual": True, "first": 45, "after": next_page_cursor}
             query = self.compose_query(self.following_query_hash, variables)
@@ -214,6 +216,8 @@ class Scraper:
         followers = user['edge_followed_by']['edges']
 
         while has_next_page:
+            time.sleep(1)
+            
             variables = {"id": self.user_id, "include_reel": False,
                          "fetch_mutual": True, "first": 45, "after": next_page_cursor}
             query = self.compose_query(self.followers_query_hash, variables)

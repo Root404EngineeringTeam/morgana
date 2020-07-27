@@ -1,5 +1,6 @@
 import os
 import sys
+import json
 import pandas
 import logging
 
@@ -28,21 +29,34 @@ class Sources:
         os.chdir(self.username)
 
         for key in self.data_sources:
+            file_name = "%s_%s" % (self.username, key)
+            file_path = os.path.abspath(file_name)
+
+            if not os.path.exists(file_path):
+                logging.fatal("source file %s doesn't exists" % file_path)
+                sys.exit(1)
+
             if ".csv" in key:
-                file_name = "%s_%s" % (self.username, key)
-                file_path = os.path.abspath(file_name)
-
-                if not os.path.exists(file_path):
-                    logging.fatal("source file %s doesn't exists" % file_path)
-                    sys.exit(1)
-
                 self.data[key.replace(".csv", "")] = pandas.read_csv(file_path)
+
+            else:
+                with open(file_path) as json_file:
+                    self.data[key.replace(".json", "")] = json.load(json_file)
 
 
 class Basics:
 
     def __init__(self, data):
         self.data = data
+
+    def general(self):
+        print("\n==========================")
+        print("= GENERAL")
+        print('--------------------------')
+        print('Followers: %i' % len(self.data['followers']))
+        print('Following: %i' % len(self.data['following']))
+        print('Posts: %i' % len(self.data['timeline']))
+        print('--------------------------')
 
     def following_followers_percent(self):
         count = 0
@@ -51,14 +65,104 @@ class Basics:
         print("= FOLLOWING FOLLOWERS")
         print('--------------------------')
 
-        for idnex, follower in self.data['followers'].iterrows():
+        for index, follower in self.data['followers'].iterrows():
             if not (self.data['following'].loc[self.data['following']['username'] == follower['username']]).empty:
                 count += 1
 
-                print("%s aka. %s" % (follower['full_name'], follower['username']))
-
-        print('--------------------------')
+                #print("%s aka. %s" % (follower['full_name'], follower['username']))
         print("People who follows user and user follow them: %i" % count)
         print("That's %i%% of the %s followers" % (
             (count / self.data['followers'].shape[0]) * 100, self.data['followers'].shape[0]))
         print("==========================")
+
+    def search_for_people(self, query):
+        print("\n===========================")
+        print("= Searching for: %s" % query)
+
+        print('--------------------------')
+        print('FOLLOWERS')
+        print('--------------------------')
+
+        for index, follower in self.data['followers'].iterrows():
+            follower['full_name'] = str(follower['full_name'])
+            if (query in follower['full_name'].lower()) or (query in follower['username'].lower()):
+                print("%s aka. %s" % (follower['full_name'], follower['username']))
+
+        print('--------------------------')
+        print('FOLLOWING')
+        print('--------------------------')
+
+        for index, follower in self.data['following'].iterrows():
+            follower['full_name'] = str(follower['full_name'])
+            if (query in follower['full_name'].lower()) or (query in follower['username'].lower()):
+                print("%s aka. %s" % (follower['full_name'], follower['username']))
+
+        print('--------------------------')
+
+        print('--------------------------')
+        print('TIMELINE POSTS CAPTIONS')
+        print('--------------------------')
+
+        for post in self.data['timeline']:
+            for caption in post['captions']:
+                if query in caption.lower():
+                    print("https://www.instagram.com/p/%s" % post['shortcode'])
+                    print(caption)
+
+        print('--------------------------')
+
+        print('--------------------------')
+        print('TIMELINE LIKES')
+        print('--------------------------')
+
+        for post in self.data['timeline']:
+
+            for liker in post['likes']:
+                liker['full_name'] = str(liker['full_name'])
+                if (query in liker['username'].lower()) or (query in liker['full_name'].lower()):
+                    print("https://www.instagram.com/p/%s" % post['shortcode'])
+                    print("%s aka. %s liked" %(liker['username'], liker['full_name']))
+
+        print('--------------------------')
+
+        print('--------------------------')
+        print('TIMELINE COMMENTS')
+        print('--------------------------')
+
+        for post in self.data['timeline']:
+
+            for comment in post['comments']:
+                if (query in comment['text'].lower()) or (query in comment['owner']['username']):
+                    print("https://www.instagram.com/p/%s" % post['shortcode'])
+                    print("%s commented" % comment['owner']['username'])
+
+        print('--------------------------')
+
+    def most_popular_post(self):
+        likes_count = 0
+        most_liked = None
+
+        print("\n==========================")
+        print('MOST LIKED POST')
+        print('--------------------------')
+
+        for post in self.data['timeline']:
+            if post['likes_count'] > likes_count:
+                likes_count = post['likes_count']
+                most_liked = post
+
+        print("https://www.instagram.com/p/%s" % most_liked['shortcode'])
+
+        comments_count = 0
+        most_commented = None
+
+        print("\n==========================")
+        print('MOST COMMENTED POST')
+        print('--------------------------')
+
+        for post in self.data['timeline']:
+            if post['comments_count'] > comments_count:
+                comments_count = post['comments_count']
+                most_commented = post
+
+        print("https://www.instagram.com/p/%s" % most_commented['shortcode'])

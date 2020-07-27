@@ -50,7 +50,13 @@ def statistics(args):
 
     basics = Basics(sources.data)
 
-    basics.following_followers_percent()
+    if args.search:
+        basics.search_for_people(args.search)
+
+    else:
+        basics.general()
+        basics.following_followers_percent()
+        basics.most_popular_post()
 
 
 if __name__ == '__main__':
@@ -64,6 +70,8 @@ if __name__ == '__main__':
                         dest='scrap', required=False)
     parser.add_argument('--statistics', action='store_true',
                         dest='statistics', required=False)
+    parser.add_argument('--search', type=str,
+                        dest='search', required=False)
     parser.add_argument('--output', type=str)
     # TODO (@Algoru):
     # --stat (genera estadísticas deseadas)
