@@ -57,12 +57,13 @@ def statistics(args):
         basics.general()
         basics.following_followers_percent()
         basics.most_popular_post()
+        basics.top_followers()
 
 
 if __name__ == '__main__':
     with open("banner.txt", "r", encoding="utf8") as banner:
         print(banner.read())
-        
+
     parser = argparse.ArgumentParser(
         description='get some instagram statistics')
 

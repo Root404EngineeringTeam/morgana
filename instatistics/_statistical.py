@@ -3,6 +3,7 @@ import sys
 import json
 import pandas
 import logging
+import operator
 
 
 class Sources:
@@ -19,7 +20,8 @@ class Sources:
         self.data = {
             'followers': None,
             'following': None,
-            'timeline': None
+            'timeline': None,
+            'top_followers': {}
         }
 
         if not os.path.exists(self.username):
@@ -48,6 +50,17 @@ class Basics:
 
     def __init__(self, data):
         self.data = data
+
+        for post in self.data['timeline']:
+            for liker in post['likes']:
+                if liker['username'] in self.data['top_followers'].keys():
+                    self.data['top_followers'][liker['username']] += 1
+
+                else:
+                    self.data['top_followers'][liker['username']] = 0
+
+        count = 0
+        self.data['top_followers'] = sorted(self.data['top_followers'].items(), key=operator.itemgetter(1), reverse=True)
 
     def general(self):
         print("\n==========================")
@@ -120,8 +133,14 @@ class Basics:
             for liker in post['likes']:
                 liker['full_name'] = str(liker['full_name'])
                 if (query in liker['username'].lower()) or (query in liker['full_name'].lower()):
+                    posts_liked = 0
+
+                    for username, likes_count in self.data['top_followers']:
+                        if username == liker['username']:
+                            posts_liked = likes_count
+                            
                     print("https://www.instagram.com/p/%s" % post['shortcode'])
-                    print("%s aka. %s liked" %(liker['username'], liker['full_name']))
+                    print("%s aka. %s like this and other %s posts" %(liker['username'], liker['full_name'], posts_liked))
 
         print('--------------------------')
 
@@ -135,6 +154,25 @@ class Basics:
                 if (query in comment['text'].lower()) or (query in comment['owner']['username']):
                     print("https://www.instagram.com/p/%s" % post['shortcode'])
                     print("%s commented '%s'" % (comment['owner']['username'], comment['text']))
+
+        print('--------------------------')
+
+    def top_followers(self):
+        top_followers = {}
+
+        print("\n==========================")
+        print('TOP FOLLOWERS')
+        print('--------------------------')
+
+        count = 0
+
+        for username, likes_count in self.data['top_followers']:
+            print("%s liked %s posts" % (username, likes_count))
+
+            count += 1
+
+            if count == 10:
+                break
 
         print('--------------------------')
 
