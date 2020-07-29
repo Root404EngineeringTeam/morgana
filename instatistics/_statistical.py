@@ -57,7 +57,7 @@ class Basics:
                     self.data['top_followers'][liker['username']] += 1
 
                 else:
-                    self.data['top_followers'][liker['username']] = 0
+                    self.data['top_followers'][liker['username']] = 1
 
         count = 0
         self.data['top_followers'] = sorted(self.data['top_followers'].items(), key=operator.itemgetter(1), reverse=True)
@@ -138,7 +138,7 @@ class Basics:
                     for username, likes_count in self.data['top_followers']:
                         if username == liker['username']:
                             posts_liked = likes_count
-                            
+
                     print("https://www.instagram.com/p/%s" % post['shortcode'])
                     print("%s aka. %s like this and other %s posts" %(liker['username'], liker['full_name'], posts_liked))
 
@@ -189,7 +189,11 @@ class Basics:
                 likes_count = post['likes_count']
                 most_liked = post
 
-        print("https://www.instagram.com/p/%s" % most_liked['shortcode'])
+        if most_liked:
+            print("https://www.instagram.com/p/%s" % most_liked['shortcode'])
+
+        else:
+            print("No likes in any post :(")
 
         comments_count = 0
         most_commented = None
@@ -203,4 +207,8 @@ class Basics:
                 comments_count = post['comments_count']
                 most_commented = post
 
-        print("https://www.instagram.com/p/%s" % most_commented['shortcode'])
+        if most_commented:
+            print("https://www.instagram.com/p/%s" % most_commented['shortcode'])
+
+        else:
+            print("No comments in any post :(")
