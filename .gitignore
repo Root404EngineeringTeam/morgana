@@ -1,6 +1,7 @@
 *.csv
 *.json
 *.txt
+*.jpg
 
 # Created by https://www.gitignore.io/api/vim,linux,macos,emacs,dotenv,python,windows,libreoffice,microsoftoffice
 # Edit at https://www.gitignore.io/?templates=vim,linux,macos,emacs,dotenv,python,windows,libreoffice,microsoftoffice
