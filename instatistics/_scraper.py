@@ -4,6 +4,7 @@ import time
 import pandas
 import requests
 import urllib.parse
+import shutil
 import os
 
 
@@ -42,7 +43,7 @@ class Scraper:
         return query
 
     def fetch_likes(self, shortcode, current, total):
-        print("\r [ >] Fetching likes information for %s (%i%%)" %
+        print("\r [ >] Fetching post information %s (%i%%)" %
               (shortcode, (current / total) * 100), end='')
 
         variables = {"shortcode": shortcode,
@@ -87,6 +88,14 @@ class Scraper:
         return likes
 
     def fetch_timeline(self):
+        timeline_output = os.path.join(self.output, 'timeline')
+
+        try:
+            os.mkdir(timeline_output)
+
+        except FileExistsError:
+            pass
+
         variables = {"id": self.user_id, "first": 45}
         query = self.compose_query(self.timelime_query_hash, variables)
 
@@ -138,6 +147,14 @@ class Scraper:
                 'likes_count': node['edge_media_preview_like']['count'],
                 'likes': self.fetch_likes(node['shortcode'], i, len(edges))
             })
+
+            response = requests.get(node['display_url'], stream=True)
+            file_name = "%s.jpg" % node['shortcode']
+
+            with open(os.path.join(timeline_output, file_name), 'wb') as output_file:
+                shutil.copyfileobj(response.raw, output_file)
+
+            del response
 
             i += 1
 
@@ -193,7 +210,32 @@ class Scraper:
         data_frame.to_csv(output)
 
         print("\n [ >] Data saved to %s_following.csv" % self.user_name)
-        print(" [ >] Operation done")
+
+        output = os.path.join(self.output, 'following_profile_pics')
+
+        try:
+            os.mkdir(output)
+
+        except FileExistsError:
+            pass
+
+        print(" [ >] Downloading profile pics...")
+
+        count = 0
+
+        for following in followings:
+            response = requests.get(following['node']['profile_pic_url'], stream=True)
+            file_name = "%s.jpg" % following['node']['username']
+
+            print("\r                                                         ", end='')
+            print("\r [ >] Downloading %s..." % file_name, end='')
+
+            with open(os.path.join(output, file_name), 'wb') as output_file:
+                shutil.copyfileobj(response.raw, output_file)
+
+            del response
+
+        print("\n [ >] Operation done")
 
     def fetch_followers(self):
         variables = {"id": self.user_id, "include_reel": False,
@@ -238,7 +280,32 @@ class Scraper:
         data_frame.to_csv(output)
 
         print("\n [ >] Data saved to %s_followers.csv" % self.user_name)
-        print(" [ >] Operation done")
+
+        output = os.path.join(self.output, 'followers_profile_pics')
+
+        try:
+            os.mkdir(output)
+
+        except FileExistsError:
+            pass
+
+        print(" [ >] Downloading profile pics...")
+
+        count = 0
+
+        for follower in followers:
+            response = requests.get(follower['node']['profile_pic_url'], stream=True)
+            file_name = "%s.jpg" % follower['node']['username']
+
+            print("\r                                                         ", end='')
+            print("\r [ >] Downloading %s..." % file_name, end='')
+
+            with open(os.path.join(output, file_name), 'wb') as output_file:
+                shutil.copyfileobj(response.raw, output_file)
+
+            del response
+
+        print("\n [ >] Operation done")
 
     def scrap_user_info(self):
         print(" [ >] Fetching user profile information")
