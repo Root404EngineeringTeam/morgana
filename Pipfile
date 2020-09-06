@@ -9,6 +9,7 @@ verify_ssl = true
 pandas = "*"
 requests = "*"
 jinja2 = "*"
+bs4 = "*"
 
 [requires]
 python_version = "3.8"

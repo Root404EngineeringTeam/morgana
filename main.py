@@ -47,21 +47,23 @@ def scrap(args):
 
 def statistics(args):
     sources = Sources(args.user)
-
     basics = Basics(sources.data)
+
+    basics.general()
+    basics.following_followers_percent()
+    basics.most_popular_post()
+    basics.top_followers()
 
     if args.search:
         basics.search_for_people(args.search)
 
-    else:
-        basics.general()
-        basics.following_followers_percent()
-        basics.most_popular_post()
-        basics.top_followers()
+    if args.html:
+        html_reporting = HTMLReporting(sources.data)
+        html_reporting.generate()
 
 
 if __name__ == '__main__':
-    with open("banner.txt", "r", encoding="utf8") as banner:
+    with open("banner", "r", encoding="utf8") as banner:
         print(banner.read())
 
     parser = argparse.ArgumentParser(
@@ -76,6 +78,8 @@ if __name__ == '__main__':
                         dest='statistics', required=False)
     parser.add_argument('--search', type=str,
                         dest='search', required=False)
+    parser.add_argument('--html', action='store_true',
+                        dest='html', required=False)
     parser.add_argument('--output', type=str)
     # TODO (@Algoru):
     # --stat (genera estadísticas deseadas)
@@ -88,3 +92,6 @@ if __name__ == '__main__':
 
     elif args.statistics:
         statistics(args)
+
+    else:
+        print(" [ >] use --help")

@@ -7,6 +7,7 @@ import urllib.parse
 import shutil
 import os
 
+from bs4 import BeautifulSoup
 
 class Scraper:
     def __init__(self, user_name, cookies, output):
@@ -16,7 +17,8 @@ class Scraper:
         self.followers_query_hash = ""
         self.following_query_hash = ""
         self.timelime_query_hash = ""
-        self.likes_query_hash = ''
+        self.likes_query_hash = ""
+        self.userinfo_query_hash = ""
         self.cookie = cookies
         self.user_id = ""
         self.user_name = user_name
@@ -183,6 +185,10 @@ class Scraper:
 
         followings = user['edge_follow']['edges']
 
+        if len(followings) == 0:
+            print(" [!!] ERROR retreiving following users, check your cookies")
+            exit()
+
         while has_next_page:
             time.sleep(1)
 
@@ -254,6 +260,10 @@ class Scraper:
 
         followers = user['edge_followed_by']['edges']
 
+        if len(followers) == 0:
+            print(" [!!] ERROR retreiving followers, check your cookies")
+            exit()
+
         while has_next_page:
             time.sleep(1)
 
@@ -319,6 +329,19 @@ class Scraper:
         if user_id:
             self.user_id = user_id.group(1)
             print(" [ >] user_id: %s" % user_id.group(1))
+
+        response = requests.get(
+            "https://www.instagram.com/static/bundles/es6/Consumer.js/16183c525059.js", headers={'cookie': self.cookie})
+        result = response.text
+
+        userinfo_query_hash_regex = r'const s="(\w+)",o='
+        userinfo_query_hash = re.search(userinfo_query_hash_regex, result)
+
+        if userinfo_query_hash:
+            self.userinfo_query_hash = userinfo_query_hash.group(1)
+
+            print(" [ >] User info query hash: %s" % self.userinfo_query_hash)
+
         response = requests.get(
             "https://www.instagram.com/static/bundles/es6/Consumer.js/72f23d3ee788.js", headers={'cookie': self.cookie})
         result = response.text
@@ -356,3 +379,23 @@ class Scraper:
             self.likes_query_hash = likes_query_hash.group(1)
 
             print(" [ >] Likes query hash: %s" % self.likes_query_hash)
+
+        variables = {"user_id": self.user_id, "include_chaining": True,
+                     "include_reel": True, "include_suggested_users": False,
+                     "include_logged_out_extras": True,
+                     "include_highlight_reels": True,
+                     "include_live_status": True}
+        query = self.compose_query(self.userinfo_query_hash, variables)
+
+        response = requests.get(query, headers={'Cookie': self.cookie})
+        result = json.loads(response.text)
+
+        profile_pic_url = result['data']['user']['reel']['user']['profile_pic_url']
+        response = requests.get(profile_pic_url, stream=True)
+        file_name = "%s.jpg" % self.user_name
+        print(" [ >] Downloading profile picture...")
+
+        with open(os.path.join(self.output, file_name), 'wb') as output_file:
+            shutil.copyfileobj(response.raw, output_file)
+
+        del response

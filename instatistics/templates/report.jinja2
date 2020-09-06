@@ -1,0 +1,215 @@
+<!--
+   ⠄⠄⠄⢰⣧⣼⣯⠄⣸⣠⣶⣶⣦⣾⠄⠄⠄⠄⡀⠄⢀⣿⣿⠄⠄⠄⢸⡇⠄⠄
+   ⠄⠄⠄⣾⣿⠿⠿⠶⠿⢿⣿⣿⣿⣿⣦⣤⣄⢀⡅⢠⣾⣛⡉⠄⠄⠄⠸⢀⣿⠄
+   ⠄⠄⢀⡋⣡⣴⣶⣶⡀⠄⠄⠙⢿⣿⣿⣿⣿⣿⣴⣿⣿⣿⢃⣤⣄⣀⣥⣿⣿⠄
+   ⠄⠄⢸⣇⠻⣿⣿⣿⣧⣀⢀⣠⡌⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⠿⠿⠿⣿⣿⣿⠄
+   ⠄⢀⢸⣿⣷⣤⣤⣤⣬⣙⣛⢿⣿⣿⣿⣿⣿⣿⡿⣿⣿⡍⠄⠄⢀⣤⣄⠉⠋⣰
+   ⠄⣼⣖⣿⣿⣿⣿⣿⣿⣿⣿⣿⢿⣿⣿⣿⣿⣿⢇⣿⣿⡷⠶⠶⢿⣿⣿⠇⢀⣤
+   ⠘⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣽⣿⣿⣿⡇⣿⣿⣿⣿⣿⣿⣷⣶⣥⣴⣿⡗
+   ⢀⠈⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡟⠄
+   ⢸⣿⣦⣌⣛⣻⣿⣿⣧⠙⠛⠛⡭⠅⠒⠦⠭⣭⡻⣿⣿⣿⣿⣿⣿⣿⣿⡿⠃⠄
+   ⠘⣿⣿⣿⣿⣿⣿⣿⣿⡆⠄⠄⠄⠄⠄⠄⠄⠄⠹⠈⢋⣽⣿⣿⣿⣿⣵⣾⠃⠄
+   ⠄⠘⣿⣿⣿⣿⣿⣿⣿⣿⠄⣴⣿⣶⣄⠄⣴⣶⠄⢀⣾⣿⣿⣿⣿⣿⣿⠃⠄⠄
+   ⠄⠄⠈⠻⣿⣿⣿⣿⣿⣿⡄⢻⣿⣿⣿⠄⣿⣿⡀⣾⣿⣿⣿⣿⣛⠛⠁⠄⠄⠄
+   ⠄⠄⠄⠄⠈⠛⢿⣿⣿⣿⠁⠞⢿⣿⣿⡄⢿⣿⡇⣸⣿⣿⠿⠛⠁⠄⠄⠄⠄⠄
+   ⠄⠄⠄⠄⠄⠄⠄⠉⠻⣿⣿⣾⣦⡙⠻⣷⣾⣿⠃⠿⠋⠁⠄⠄⠄⠄⠄⢀⣠⣴
+   ⣿⣿⣿⣶⣶⣮⣥⣒⠲⢮⣝⡿⣿⣿⡆⣿⡿⠃⠄⠄⠄⠄⠄⠄⠄⣠⣴⣿⣿⣿
+
+   Crafted with dark magic by <edo0xff>
+-->
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+   <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+      <link rel="stylesheet" href="./theme.css">
+      <title>{{ data.username }} | Morgana report</title>
+   </head>
+   <body>
+      <div class="container mb-5">
+         <div class="row mt-4">
+            <div class="col">
+               <h3>Profile report</h3>
+            </div>
+         </div>
+         <div class="row mt-4">
+            <div class="col-6">
+               <!-- PROFILE CARD -->
+               <div class="card mb-3" style="max-width: 100%;">
+                 <div class="row no-gutters">
+                   <div class="col-md-4">
+                     <img src="{{ data.username }}.jpg" class="card-img" alt="{{ data.username }}">
+                   </div>
+                   <div class="col-md-8">
+                     <div class="card-body">
+                       <h5 class="card-title"><a href="https://www.instagram.com/{{ data.username }}" target="_ig_profile">{{ data.username }}</a></h5>
+                       <p class="card-text"><small class="text-muted">
+                          {{ data.followers|length }} followers |
+                          {{ data.following|length }} following |
+                          {{ data.timeline|length }} posts
+                       </small></p>
+                       <p class="card-text"><small class="text-muted">
+                          Follows {{ data.ff_percent }}% of his followers
+                       </small></p>
+                     </div>
+                   </div>
+                 </div>
+               </div>
+               <!-- / PROFILE CARD -->
+               <!-- TOP FOLLOWERS -->
+               <div class="card" style="width: 100%;">
+                 <ul class="list-group list-group-flush">
+                   <li class="list-group-item"><b>Top followers</b></li>
+                   {% for follower in data.top_followers[:10] %}
+                     <li class="list-group-item">
+                        <img src="./followers_profile_pics/{{ follower[0] }}.jpg" alt="" width="50px" height="50px" style="border-radius:50%;">
+                        <a href="https://www.instagram.com/{{ follower[0] }}/" target="_ig_profile">
+                           <b>{{ follower[0] }}</b>
+                        </a>
+                        liked <b>{{ follower[1] }} posts</b>
+                     </li>
+                   {% endfor %}
+                 </ul>
+               </div>
+               <!-- / TOP FOLLOWERS -->
+            </div>
+            <div class="col-4">
+               <!-- MOST LIKED POST -->
+               <div class="card mb-3" style="width: 100%;">
+                 <img src="{{ data.most_liked_post['display_url'] }}" class="card-img-top" alt="...">
+                 <div class="card-body">
+                   <h5 class="card-title">Most liked post</h5>
+                   {% for caption in data.most_liked_post['captions'] %}
+                     <p class="card-text">{{ caption }}</p>
+                   {% endfor %}
+                   <a href="https://www.instagram.com/p/{{ data.most_liked_post['shortcode'] }}" class="btn btn-primary" target="_ig_post">View post</a>
+                 </div>
+               </div>
+               <!-- / MOST LIKED POST -->
+               <!-- MOST COMMENTED POST -->
+               <div class="card mb-5" style="width: 100%;">
+                 <img src="{{ data.most_commented_post['display_url'] }}" class="card-img-top" alt="...">
+                 <div class="card-body">
+                   <h5 class="card-title">Most commented post</h5>
+                   {% for caption in data.most_commented_post['captions'] %}
+                     <p class="card-text">{{ caption }}</p>
+                   {% endfor %}
+                   <a href="https://www.instagram.com/p/{{ data.most_commented_post['shortcode'] }}" class="btn btn-primary" target="_ig_post">View post</a>
+                 </div>
+               </div>
+               <!-- / MOST COMMENTED POST -->
+            </div>
+         </div>
+         <div class="row mt-2">
+            <div class="col-10">
+               <!-- SEARCH RESULTS -->
+               <div class="card mb-5 mt-3" style="width: 100%;">
+                 <div class="card-body">
+                   <h5 class="card-title">Search results</h5>
+                   {% if not data.search.query %}
+                     <i>No search query, use --search flag.</i>
+                   {% else %}
+                     <p>Searching for: <b>{{ data.search.query }}</b></p>
+                     <ul class="list-group list-group-flush">
+                         <li class="list-group-item"><b>Followers</b></li>
+                         {% for follower in data.search.followers %}
+                           <li class="list-group-item">
+                              <img src="./followers_profile_pics/{{ follower[1] }}.jpg" alt="" width="50px" height="50px" style="border-radius:50%;">
+                              <a href="https://www.instagram.com/{{ follower[1] }}/" target="_ig_profile">
+                                 <b>{{ follower[0] }}</b>
+                              </a> @{{ follower[1] }}
+                           </li>
+                         {% endfor %}
+                       </ul>
+                       <ul class="list-group list-group-flush">
+                         <li class="list-group-item"><b>Following</b></li>
+                         {% for follower in data.search.following %}
+                           <li class="list-group-item">
+                              <img src="./followers_profile_pics/{{ follower[1] }}.jpg" alt="" width="50px" height="50px" style="border-radius:50%;">
+                              <a href="https://www.instagram.com/{{ follower[1] }}/" target="_ig_profile">
+                                 <b>{{ follower[0] }}</b>
+                              </a> @{{ follower[1] }}
+                           </li>
+                         {% endfor %}
+                       </ul>
+                       <ul class="list-group list-group-flush">
+                         <li class="list-group-item"><b>Posts</b></li>
+                         {% for post in data.search.posts %}
+                           <li class="list-group-item">
+                              <img src="{{ post[0]['display_url'] }}" alt="" width="50px" height="50px">
+                              <p>
+                                 <a href="https://www.instagram.com/p/{{ post[0]['shortcode'] }}/" target="_ig_post">
+                                    instagram.com/p/{{ post[0]['shortcode'] }}
+                                 </a>
+                                 <br>{{ post[1] }}
+                              </p>
+                           </li>
+                         {% endfor %}
+                       </ul>
+                       <ul class="list-group list-group-flush">
+                         <li class="list-group-item"><b>Likes</b></li>
+                         {% for post, liker in data.search.likes %}
+                           <li class="list-group-item">
+                              <img src="./followers_profile_pics/{{ liker.username }}.jpg" alt="" width="50px" height="50px" style="border-radius:50%;">
+                              <img src="{{ post.display_url }}" alt="" width="50px" height="50px">
+                              <a href="https://www.instagram.com/{{ liker.username }}/" target="_ig_profile">
+                                 <b>{{ liker.username }}</b>
+                              </a> liked
+                              <a href="https://www.instagram.com/p/{{ post.shortcode }}/" target="_ig_post">
+                                 instagram.com/p/{{ post.shortcode }}
+                              </a>
+                           </li>
+                         {% endfor %}
+                       </ul>
+                       <ul class="list-group list-group-flush">
+                         <li class="list-group-item"><b>Comments</b></li>
+                         {% for post, username, comment in data.search.comments %}
+                           <li class="list-group-item">
+                              <img src="./followers_profile_pics/{{ username }}.jpg" alt="" width="50px" height="50px" style="border-radius:50%;">
+                              <img src="{{ post.display_url }}" alt="" width="50px" height="50px">
+                              <a href="https://www.instagram.com/{{ username }}/" target="_ig_profile">
+                                 <b>{{ username }}</b>
+                              </a> commented "<i>{{ comment }}</i>" on
+                              <a href="https://www.instagram.com/p/{{ post.shortcode }}/" target="_ig_post">
+                                 instagram.com/p/{{ post.shortcode }}
+                              </a>
+                           </li>
+                         {% endfor %}
+                       </ul>
+                   {% endif %}
+                 </div>
+               </div>
+               <!-- / SEARCH RESULTS -->
+            </div>
+         </div>
+         <div class="row mt-2">
+            <div class="col-10">
+               <div class="card mb-5" style="width: 100%;">
+                 <div class="card-body">
+                   <h5 class="card-title">Followers</h5>
+                   {% for index, follower in data.followers.iterrows() %}
+                     <a href="https://www.instagram.com/{{ follower.username }}/" target="_ig_profile" title="{{ follower.username }}">
+                        <img src="./followers_profile_pics/{{ follower.username }}.jpg" alt="{{ follower.username }}" width="70px" height="70px">
+                     </a>
+                   {% endfor %}
+                 </div>
+               </div>
+            </div>
+         </div>
+         <div class="row mt-2">
+            <div class="col-10">
+               <div class="card mb-5" style="width: 100%;">
+                 <div class="card-body">
+                   <h5 class="card-title">Following</h5>
+                   {% for index, following in data.following.iterrows() %}
+                     <a href="https://www.instagram.com/{{ following.username }}/" target="_ig_profile" title="{{ following.username }}">
+                        <img src="./following_profile_pics/{{ following.username }}.jpg" alt="{{ following.username }}" width="70px" height="70px">
+                     </a>
+                   {% endfor %}
+                 </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </body>
+</html>

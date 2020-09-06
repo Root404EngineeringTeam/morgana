@@ -1,11 +1,12 @@
 import os
 import sys
 import json
-import jinja2
+import shutil
 import pandas
 import logging
 import operator
 
+from jinja2 import Template
 
 class Sources:
 
@@ -22,7 +23,19 @@ class Sources:
             'followers': None,
             'following': None,
             'timeline': None,
-            'top_followers': {}
+            'top_followers': {},
+            'username': username,
+            'ff_percent': 0,
+            'most_liked_post': None,
+            'most_commented_post': None,
+            'search': {
+                'followers': [],
+                'following': [],
+                'posts': [],
+                'likes': [],
+                'comments': [],
+                'query': None
+            }
         }
 
         if not os.path.exists(self.username):
@@ -51,6 +64,9 @@ class Basics:
 
     def __init__(self, data):
         self.data = data
+
+        if type(self.data['top_followers']) is list:
+            return
 
         for post in self.data['timeline']:
             for liker in post['likes']:
@@ -84,14 +100,17 @@ class Basics:
                 count += 1
 
                 #print("%s aka. %s" % (follower['full_name'], follower['username']))
+        self.data['ff_percent'] = int((count / self.data['followers'].shape[0]) * 100)
         print("People who follows user and user follow them: %i" % count)
         print("That's %i%% of the %s followers" % (
-            (count / self.data['followers'].shape[0]) * 100, self.data['followers'].shape[0]))
+            self.data['ff_percent'], self.data['followers'].shape[0]))
         print("==========================")
 
     def search_for_people(self, query):
         print("\n===========================")
         print("= Searching for: %s" % query)
+
+        self.data['search']['query'] = query
 
         print('--------------------------')
         print('FOLLOWERS')
@@ -101,6 +120,7 @@ class Basics:
             follower['full_name'] = str(follower['full_name'])
             if (query in follower['full_name'].lower()) or (query in follower['username'].lower()):
                 print("%s aka. %s" % (follower['full_name'], follower['username']))
+                self.data['search']['followers'].append((follower['full_name'], follower['username']))
 
         print('--------------------------')
         print('FOLLOWING')
@@ -110,6 +130,7 @@ class Basics:
             follower['full_name'] = str(follower['full_name'])
             if (query in follower['full_name'].lower()) or (query in follower['username'].lower()):
                 print("%s aka. %s" % (follower['full_name'], follower['username']))
+                self.data['search']['following'].append((follower['full_name'], follower['username']))
 
         print('--------------------------')
 
@@ -122,6 +143,7 @@ class Basics:
                 if query in caption.lower():
                     print("https://www.instagram.com/p/%s" % post['shortcode'])
                     print(caption)
+                    self.data['search']['posts'].append((post, caption))
 
         print('--------------------------')
 
@@ -143,6 +165,8 @@ class Basics:
                     print("https://www.instagram.com/p/%s" % post['shortcode'])
                     print("%s aka. %s like this and other %s posts" %(liker['username'], liker['full_name'], posts_liked))
 
+                    self.data['search']['likes'].append((post, liker))
+
         print('--------------------------')
 
         print('--------------------------')
@@ -156,6 +180,7 @@ class Basics:
                     print("https://www.instagram.com/p/%s" % post['shortcode'])
                     print("%s commented '%s'" % (comment['owner']['username'], comment['text']))
 
+                    self.data['search']['comments'].append((post, comment['owner']['username'], comment['text']))
         print('--------------------------')
 
     def top_followers(self):
@@ -189,6 +214,7 @@ class Basics:
             if post['likes_count'] > likes_count:
                 likes_count = post['likes_count']
                 most_liked = post
+                self.data['most_liked_post'] = post
 
         if most_liked:
             print("https://www.instagram.com/p/%s" % most_liked['shortcode'])
@@ -207,9 +233,32 @@ class Basics:
             if post['comments_count'] > comments_count:
                 comments_count = post['comments_count']
                 most_commented = post
+                self.data['most_commented_post'] = post
 
         if most_commented:
             print("https://www.instagram.com/p/%s" % most_commented['shortcode'])
 
         else:
             print("No comments in any post :(")
+
+
+class HTMLReporting(Basics):
+
+    def __init__(self, data):
+        super().__init__(data)
+
+    def generate(self):
+        path = os.path.dirname(os.path.realpath(__file__))
+
+        print(" [ >] generating html report...")
+        shutil.copyfile('%s/templates/bootstrap.scss' % path, 'theme.css')
+
+        with open('%s/templates/report.jinja2' % path) as source:
+            report = Template(source.read())
+
+        output = report.render(data=self.data)
+
+        with open('report.html', 'w') as output_file:
+            output_file.write(output)
+
+        print(" [ >] report saved to report.html")
