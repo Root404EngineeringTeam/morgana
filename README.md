@@ -51,5 +51,5 @@ Guardamos y listo.
 
 # Colaboradores
 
-Eduardo Becerril [@edo0xff](https://github.com/edo0xff)
-Álvaro Stagg [@Algoru](https://github.com/Algoru)
+- Eduardo Becerril [@edo0xff](https://github.com/edo0xff)
+- Álvaro Stagg [@Algoru](https://github.com/Algoru)
